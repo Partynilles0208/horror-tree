@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+    <title>Horror Tree</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game"></canvas>
+      <div id="eye-overlay" aria-hidden="true">
+        <div class="eyelid eyelid-top"></div>
+        <div class="eyelid eyelid-bottom"></div>
+      </div>
+
+      <section id="intro-screen" class="screen is-visible">
+        <video id="intro-video" src="./intro.mp4" preload="auto" playsinline></video>
+        <div class="intro-actions">
+          <button id="intro-start-button" type="button">Intro starten</button>
+          <button id="intro-skip-button" type="button">Ueberspringen</button>
+        </div>
+      </section>
+
+      <section id="ending-screen" aria-hidden="true">
+        <div id="ending-title">Part 2 coming soon</div>
+        <div id="credits-roll">
+          <p class="credit-heading">Dram core</p>
+          <p class="credit-role">Developer</p>
+          <p>Nils becker</p>
+          <p class="credit-role">Design</p>
+          <p>Nils becker</p>
+          <p class="credit-role">Musik</p>
+          <p>leberch</p>
+          <p>9JackJack8</p>
+          <p>reneschulze1984</p>
+          <p class="credit-role">soundeffect</p>
+          <p>dragon-ago</p>
+          <p>freesound_community</p>
+          <p>SoundReality</p>
+          <p>lesiakower</p>
+          <p>JustSomeSounds</p>
+        </div>
+      </section>
+
+      <section id="loading-screen" class="screen">
+        <div class="loading-mark"></div>
+        <h1>Loading</h1>
+        <p id="loading-detail">Wald wird vorbereitet</p>
+      </section>
+
+      <section id="menu-screen" class="screen">
+        <div class="menu-panel">
+          <p class="eyebrow">Dunkelwald</p>
+          <h1>Horror Tree</h1>
+          <button id="start-button" type="button">Starten</button>
+        </div>
+      </section>
+
+      <section id="play-screen" class="screen game-ui">
+        <div id="jumpscare-flash"></div>
+        <div class="heart-monitor" aria-hidden="true">
+          <canvas id="heart-monitor-canvas" width="190" height="64"></canvas>
+          <span id="heart-rate">72</span>
+        </div>
+        <div class="status-row">
+          <span>WASD</span>
+          <span>Umsehen</span>
+          <span>F</span>
+          <span>E</span>
+          <span>Shift</span>
+          <span>Tab</span>
+        </div>
+        <div id="story-hud" aria-live="polite">
+          <div id="chapter-label">Kapitel 1</div>
+          <div id="objective-title">Warte auf den Wald</div>
+          <div id="objective-detail">Die Glut zeigt dir den ersten Weg.</div>
+          <div id="objective-progress"></div>
+        </div>
+        <div id="story-subtitle" aria-live="polite"></div>
+        <div id="interaction-hint" aria-live="polite"></div>
+        <div id="death-overlay" aria-hidden="true"></div>
+        <div id="crosshair"></div>
+      </section>
+
+      <div id="mobile-controls" class="mobile-controls" aria-hidden="true">
+        <div id="move-stick" class="virtual-stick move-stick">
+          <div id="move-stick-thumb" class="stick-thumb"></div>
+        </div>
+        <div id="look-zone" class="look-zone">
+          <div class="look-label">Umsehen</div>
+        </div>
+      </div>
+
+      <section id="settings-screen" class="settings-ui">
+        <div class="settings-panel">
+          <h2>Sound</h2>
+          <label>
+            <span>Musik</span>
+            <input id="music-volume" type="range" min="0" max="100" value="100" />
+          </label>
+          <label>
+            <span>Effekte</span>
+            <input id="sound-volume" type="range" min="0" max="100" value="100" />
+          </label>
+        </div>
+      </section>
+
+      <section id="pause-screen" class="screen pause-ui">
+        <h2>Pause</h2>
+        <button id="resume-button" type="button">Weiter</button>
+      </section>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./node_modules/three/build/three.module.js",
+          "three/addons/": "./node_modules/three/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="./src/main.js?v=part2-spider-1"></script>
+  </body>
+</html>

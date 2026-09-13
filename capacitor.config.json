@@ -1,0 +1,10 @@
+{
+  "appId": "com.horrortree.game",
+  "appName": "Horror Tree",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true
+  }
+}
