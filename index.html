@@ -2,116 +2,329 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
-    <title>Horror Tree</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#122227" />
+    <meta
+      name="description"
+      content="Horror Tree: ein spielbarer Dreamcore-Albtraum zwischen Traumwald, verlassenen Poolräumen und einer Welt, die sich erinnert."
+    />
+    <title>Horror Tree · Hinter dem Traum</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div id="app">
-      <canvas id="game"></canvas>
-      <div id="eye-overlay" aria-hidden="true">
-        <div class="eyelid eyelid-top"></div>
-        <div class="eyelid eyelid-bottom"></div>
-      </div>
-
-      <section id="intro-screen" class="screen is-visible">
-        <video id="intro-video" src="./intro.mp4" preload="auto" playsinline></video>
-        <div class="intro-actions">
-          <button id="intro-start-button" type="button">Intro starten</button>
-          <button id="intro-skip-button" type="button">Ueberspringen</button>
-        </div>
-      </section>
-
-      <section id="ending-screen" aria-hidden="true">
-        <div id="ending-title">Part 2 coming soon</div>
-        <div id="credits-roll">
-          <p class="credit-heading">Dram core</p>
-          <p class="credit-role">Developer</p>
-          <p>Nils becker</p>
-          <p class="credit-role">Design</p>
-          <p>Nils becker</p>
-          <p class="credit-role">Musik</p>
-          <p>leberch</p>
-          <p>9JackJack8</p>
-          <p>reneschulze1984</p>
-          <p class="credit-role">soundeffect</p>
-          <p>dragon-ago</p>
-          <p>freesound_community</p>
-          <p>SoundReality</p>
-          <p>lesiakower</p>
-          <p>JustSomeSounds</p>
-        </div>
-      </section>
-
-      <section id="loading-screen" class="screen">
-        <div class="loading-mark"></div>
-        <h1>Loading</h1>
-        <p id="loading-detail">Wald wird vorbereitet</p>
-      </section>
-
-      <section id="menu-screen" class="screen">
-        <div class="menu-panel">
-          <p class="eyebrow">Dunkelwald</p>
-          <h1>Horror Tree</h1>
-          <button id="start-button" type="button">Starten</button>
-        </div>
-      </section>
-
-      <section id="play-screen" class="screen game-ui">
-        <div id="jumpscare-flash"></div>
-        <div class="heart-monitor" aria-hidden="true">
-          <canvas id="heart-monitor-canvas" width="190" height="64"></canvas>
-          <span id="heart-rate">72</span>
-        </div>
-        <div class="status-row">
-          <span>WASD</span>
-          <span>Umsehen</span>
-          <span>F</span>
-          <span>E</span>
-          <span>Shift</span>
-          <span>Tab</span>
-        </div>
-        <div id="story-hud" aria-live="polite">
-          <div id="chapter-label">Kapitel 1</div>
-          <div id="objective-title">Warte auf den Wald</div>
-          <div id="objective-detail">Die Glut zeigt dir den ersten Weg.</div>
-          <div id="objective-progress"></div>
-        </div>
-        <div id="story-subtitle" aria-live="polite"></div>
-        <div id="interaction-hint" aria-live="polite"></div>
-        <div id="death-overlay" aria-hidden="true"></div>
-        <div id="crosshair"></div>
-      </section>
-
-      <div id="mobile-controls" class="mobile-controls" aria-hidden="true">
-        <div id="move-stick" class="virtual-stick move-stick">
-          <div id="move-stick-thumb" class="stick-thumb"></div>
-        </div>
-        <div id="look-zone" class="look-zone">
-          <div class="look-label">Umsehen</div>
-        </div>
-      </div>
-
-      <section id="settings-screen" class="settings-ui">
-        <div class="settings-panel">
-          <h2>Sound</h2>
-          <label>
-            <span>Musik</span>
-            <input id="music-volume" type="range" min="0" max="100" value="100" />
-          </label>
-          <label>
-            <span>Effekte</span>
-            <input id="sound-volume" type="range" min="0" max="100" value="100" />
-          </label>
-        </div>
-      </section>
-
-      <section id="pause-screen" class="screen pause-ui">
-        <h2>Pause</h2>
-        <button id="resume-button" type="button">Weiter</button>
-      </section>
+    <canvas id="game" aria-label="Dreidimensionale Spielwelt"></canvas>
+    <div id="film" aria-hidden="true"></div>
+    <div id="vignette" aria-hidden="true"></div>
+    <div id="loading" role="status">
+      <span class="loading-ring"></span>
+      <p>Der Wald erinnert sich …</p>
     </div>
-
+    <section id="menu" class="screen" hidden aria-label="Hauptmenü">
+      <header class="masthead">
+        <a class="brand" href="#" aria-label="Horror Tree Hauptmenü"
+          ><span class="brand-mark">✳</span> EHOSER
+          <span class="studio">ORIGINALS</span></a
+        ><span class="edition"><i></i> DREAMCORE EDITION · 02</span>
+      </header>
+      <main class="menu-content">
+        <p class="eyebrow">
+          <span></span> IRGENDWO ZWISCHEN WACHEN UND TRÄUMEN
+        </p>
+        <h1>HORROR<br /><em>TREE</em><span class="title-star">✳</span></h1>
+        <p class="tagline">
+          Du kennst diesen Ort.<br />Aber du warst noch nie hier.
+        </p>
+        <div class="menu-actions">
+          <button id="start" class="primary">
+            <span>Den Traum betreten</span><span>↗</span></button
+          ><button id="continue" class="quiet" hidden>
+            Traum fortsetzen <span>→</span>
+          </button>
+        </div>
+        <div class="menu-links">
+          <button data-panel="settings">Einstellungen</button><span>·</span
+          ><button data-panel="help">So spielst du</button><span>·</span
+          ><button data-panel="credits">Credits</button>
+        </div>
+      </main>
+      <aside class="world-caption">
+        <span class="coordinate">48° 00′ N · IRGENDWO</span
+        ><span class="caption-line"></span
+        ><strong>DER WALD SCHLÄFT NICHT.</strong
+        ><small>Und er hat dich bereits bemerkt.</small>
+      </aside>
+      <footer class="menu-footer">
+        <span><i class="tiny-dot"></i> KOPFHÖRER EMPFOHLEN</span
+        ><span>WALD / POOLRÄUME / VERGESSENER GARTEN</span
+        ><button id="menu-sound" aria-label="Menüton einschalten">
+          TON AN ♫
+        </button>
+      </footer>
+    </section>
+    <section id="hud" hidden aria-label="Spielanzeige">
+      <div class="hud-top">
+        <div>
+          <p id="region" class="eyebrow">DER TRAUMWALD</p>
+          <div id="objective">Finde die fünf Erinnerungen.</div>
+          <div id="collected" aria-label="Gesammelte Erinnerungen">
+            ○ ○ ○ ○ ○
+          </div>
+        </div>
+        <button
+          id="pause-button"
+          class="icon-button"
+          aria-label="Spiel pausieren"
+        >
+          Ⅱ
+        </button>
+      </div>
+      <div id="compass">
+        <span id="direction">N</span><span id="distance"></span>
+      </div>
+      <div id="crosshair" aria-hidden="true"></div>
+      <div id="interaction" role="status"></div>
+      <div id="subtitle" role="status"></div>
+      <div class="hud-bottom">
+        <div class="meters">
+          <label
+            >AUSDAUER
+            <progress id="stamina" max="100" value="100"></progress></label
+          ><label
+            ><span id="lamp-label">LICHT</span
+            ><progress id="battery" max="100" value="100"></progress
+          ></label>
+        </div>
+        <div id="threat">
+          <span id="threat-dot"></span
+          ><span id="threat-text">Du bist nicht allein.</span>
+        </div>
+        <div class="desktop-hints">
+          <kbd>E</kbd> Interagieren <kbd>F</kbd> Licht <kbd>Q</kbd> Echo
+          <kbd>Esc</kbd> Pause
+        </div>
+      </div>
+    </section>
+    <div id="touch-controls" hidden>
+      <div id="look-zone" aria-label="Zum Umsehen ziehen"></div>
+      <div id="move-stick" aria-label="Bewegen">
+        <span id="stick-thumb"></span>
+      </div>
+      <div class="touch-actions">
+        <button id="touch-interact" aria-label="Interagieren">E</button
+        ><button id="touch-light" aria-label="Taschenlampe">☀</button
+        ><button id="touch-sprint" aria-label="Rennen halten">»</button
+        ><button id="touch-crouch" aria-label="Schleichen umschalten">↓</button
+        ><button id="touch-echo" aria-label="Echo auslösen">◎</button>
+      </div>
+    </div>
+    <section
+      id="pause"
+      class="screen modal-screen"
+      hidden
+      aria-labelledby="pause-title"
+    >
+      <div class="panel small-panel">
+        <p class="eyebrow">DER TRAUM WARTET</p>
+        <h2 id="pause-title">Ein Atemzug.</h2>
+        <p class="muted">Dein Fortschritt wird automatisch gespeichert.</p>
+        <button id="resume" class="primary">Weiterträumen <span>→</span></button
+        ><button data-panel="settings" class="secondary">Einstellungen</button
+        ><button id="exit-menu" class="quiet">Zum Hauptmenü</button>
+      </div>
+    </section>
+    <section
+      id="settings"
+      class="screen modal-screen"
+      hidden
+      aria-labelledby="settings-title"
+    >
+      <div class="panel">
+        <button
+          class="close-panel icon-button"
+          aria-label="Einstellungen schließen"
+        >
+          ×
+        </button>
+        <p class="eyebrow">DEIN TRAUM, DEINE REGELN</p>
+        <h2 id="settings-title">Einstellungen</h2>
+        <form id="settings-form">
+          <label class="setting"
+            ><span
+              >Grafik<small
+                >Auto passt die Auflösung an dein Gerät an.</small
+              ></span
+            ><select name="quality">
+              <option value="auto">Automatisch</option>
+              <option value="low">Flüssig</option>
+              <option value="medium">Ausgewogen</option>
+              <option value="high">Hoch</option>
+            </select></label
+          >
+          <label class="setting"
+            ><span
+              >Schwierigkeit<small
+                >Gilt ab der nächsten neuen Runde.</small
+              ></span
+            ><select name="difficulty">
+              <option value="normal">Traum & Schrecken</option>
+              <option value="hard">Albtraum</option>
+              <option value="explore">Nur entdecken</option>
+            </select></label
+          >
+          <label class="setting"
+            ><span>Musik</span
+            ><input
+              name="music"
+              type="range"
+              min="0"
+              max="100"
+              value="40" /></label
+          ><label class="setting"
+            ><span>Geräusche</span
+            ><input name="sound" type="range" min="0" max="100" value="65"
+          /></label>
+          <label class="setting"
+            ><span>Empfindlichkeit</span
+            ><input
+              name="sensitivity"
+              type="range"
+              min="20"
+              max="180"
+              value="85" /></label
+          ><label class="setting"
+            ><span>Sichtfeld</span
+            ><input name="fov" type="range" min="60" max="100" value="78"
+          /></label>
+          <label class="setting"
+            ><span
+              >Jumpscares<small
+                >Monster bleiben bei ausgeschalteten Schreckbildern
+                aktiv.</small
+              ></span
+            ><input name="jumpscares" type="checkbox" checked /></label
+          ><label class="setting"
+            ><span
+              >Kameraeffekte<small
+                >Filmstruktur, Glühen und sanftes Kamerawackeln.</small
+              ></span
+            ><input name="effects" type="checkbox" checked /></label
+          ><label class="setting"
+            ><span>Touch-Steuerung immer anzeigen</span
+            ><input name="touch" type="checkbox"
+          /></label>
+          <button type="button" class="primary close-panel">
+            Fertig <span>✓</span>
+          </button>
+        </form>
+      </div>
+    </section>
+    <section
+      id="help"
+      class="screen modal-screen"
+      hidden
+      aria-labelledby="help-title"
+    >
+      <div class="panel">
+        <button class="close-panel icon-button" aria-label="Hilfe schließen">
+          ×
+        </button>
+        <p class="eyebrow">FÜNF ERINNERUNGEN. EIN AUSWEG.</p>
+        <h2 id="help-title">Finde zurück.</h2>
+        <p>
+          Suche die leuchtenden Kassetten im Wald, in den Poolräumen und im
+          vergessenen Garten. Bringe alle fünf zum großen Baum im Norden. Das
+          Licht auf dem Kompass führt dich zur nächsten Erinnerung.
+        </p>
+        <div class="control-list">
+          <span><kbd>W A S D</kbd> oder Pfeiltasten</span><span>Bewegen</span
+          ><span>Maus / rechts ziehen</span><span>Umsehen</span
+          ><span><kbd>Shift</kbd> / <kbd>C</kbd></span
+          ><span>Rennen / Schleichen</span
+          ><span><kbd>E</kbd> / <kbd>F</kbd></span
+          ><span>Aufheben / Taschenlampe</span><span><kbd>Q</kbd></span
+          ><span>Echo zum Ablenken</span
+          ><span><kbd>Esc</kbd> / <kbd>P</kbd></span
+          ><span>Pause</span>
+        </div>
+        <p class="muted">
+          Gamepad: linke/rechte Sticks, A zum Aufheben, X für Licht, B zum
+          Schleichen, LB zum Rennen, Y für Echo, Start für Pause.
+        </p>
+        <div class="help-note">
+          Der Hüter sucht dich. Der Fadengänger hört dich. Der Beobachter
+          wartet, bis du wegschaust. Unterbrich ihre Sicht hinter Bäumen und
+          Mauern. Schleichen ist leiser; dein Echo lenkt sie zu einem anderen
+          Ort.
+        </div>
+        <button class="primary close-panel">Verstanden <span>→</span></button>
+      </div>
+    </section>
+    <section
+      id="credits"
+      class="screen modal-screen"
+      hidden
+      aria-labelledby="credits-title"
+    >
+      <div class="panel small-panel">
+        <button class="close-panel icon-button" aria-label="Credits schließen">
+          ×
+        </button>
+        <p class="eyebrow">EHOSER ORIGINALS</p>
+        <h2 id="credits-title">Horror Tree</h2>
+        <p>
+          Idee, ursprüngliches Spiel & Design<br /><strong>Nils Becker</strong>
+        </p>
+        <p class="muted">
+          Musik aus dem Originalprojekt<br />leberch · 9JackJack8 ·
+          reneschulze1984
+        </p>
+        <p class="muted">
+          Soundeffekte aus dem Originalprojekt<br />dragon-ago ·
+          freesound_community · SoundReality · lesiakower · JustSomeSounds
+        </p>
+        <p class="muted">
+          3D-Engine: Three.js (MIT)<br />Dreamcore Edition · 2.0
+        </p>
+        <button class="primary close-panel">Zurück <span>→</span></button>
+      </div>
+    </section>
+    <section
+      id="result"
+      class="screen modal-screen"
+      hidden
+      aria-labelledby="result-title"
+    >
+      <div class="panel small-panel">
+        <p id="result-label" class="eyebrow"></p>
+        <h2 id="result-title"></h2>
+        <p id="result-detail"></p>
+        <button id="retry" class="primary">
+          Noch einmal träumen <span>↗</span></button
+        ><button id="result-menu" class="quiet">Zum Hauptmenü</button>
+      </div>
+    </section>
+    <div id="scare" hidden aria-hidden="true">
+      <div class="scare-face"><i></i><i></i><span></span></div>
+      <p>DU BIST NOCH HIER.</p>
+    </div>
+    <section id="error" class="screen modal-screen" hidden>
+      <div class="panel small-panel">
+        <p class="eyebrow">DER TRAUM KONNTE NICHT STARTEN</p>
+        <h2>Ein kurzer Umweg.</h2>
+        <p id="error-detail">
+          Bitte starte das Spiel mit „npm start“ und öffne es in einem Browser
+          mit WebGL.
+        </p>
+        <button class="primary" onclick="location.reload()">
+          Erneut versuchen
+        </button>
+      </div>
+    </section>
+    <noscript>Horror Tree benötigt aktiviertes JavaScript.</noscript>
     <script type="importmap">
       {
         "imports": {
@@ -120,6 +333,12 @@
         }
       }
     </script>
-    <script type="module" src="./src/main.js?v=part2-spider-1"></script>
+    <script type="module">
+      import("./src/main.js").catch((error) => {
+        console.error(error);
+        document.getElementById("loading").hidden = true;
+        document.getElementById("error").hidden = false;
+      });
+    </script>
   </body>
 </html>
