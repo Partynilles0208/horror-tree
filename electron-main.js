@@ -19,7 +19,9 @@ function createWindow(url) {
     },
   });
 
-  mainWindow.loadURL(`${url}&desktop=1`);
+  const windowUrl = new URL(url);
+  windowUrl.searchParams.set("desktop", "1");
+  mainWindow.loadURL(windowUrl.href);
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
@@ -28,7 +30,10 @@ function createWindow(url) {
 app.whenReady().then(() => {
   localServer = startServer(5177, {
     openBrowser: false,
-    onReady: ({ url }) => createWindow(url),
+    onReady: ({ server, url }) => {
+      localServer = server;
+      createWindow(url);
+    },
   });
 });
 
@@ -41,7 +46,10 @@ app.on("activate", () => {
   if (!mainWindow) {
     localServer = startServer(5177, {
       openBrowser: false,
-      onReady: ({ url }) => createWindow(url),
+      onReady: ({ server, url }) => {
+        localServer = server;
+        createWindow(url);
+      },
     });
   }
 });

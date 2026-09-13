@@ -1,17 +1,20 @@
 {
   "name": "horror-tree",
-  "version": "1.0.0",
-  "description": "Kleines Horror-Waldspiel mit Three.js.",
+  "version": "2.0.0",
+  "description": "Dreamcore-Horrorspiel zwischen Traumwald, Poolr\u00e4umen und vergessenen Erinnerungen.",
   "main": "electron-main.js",
   "scripts": {
     "start": "node server.js",
     "window": "electron .",
     "serve": "node server.js --no-open",
-    "build:installer": "powershell -ExecutionPolicy Bypass -File scripts/build-installer.ps1",
-    "test": "playwright test verify.spec.js",
-    "android:sync": "npx cap sync android",
+    "test": "node --test tests/core.test.mjs tests/server.test.cjs",
+    "android:sync": "npm run build && npx cap sync android",
     "android:open": "npx cap open android",
-    "android:build": "npx cap sync android && cd android && ./gradlew assembleDebug"
+    "android:build": "npm run android:sync && cd android && ./gradlew assembleDebug",
+    "build": "node scripts/build-web.cjs",
+    "preview": "node scripts/serve-built.cjs",
+    "test:browser": "playwright test",
+    "android:add": "npm run build && npx cap add android"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +23,7 @@
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "electron": "^42.2.0",
-    "three": "^0.164.1"
+    "three": "0.164.1"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.0",
