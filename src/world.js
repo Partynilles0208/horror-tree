@@ -102,8 +102,8 @@ export function buildWorld(scene) {
       side: THREE.BackSide,
       depthWrite: false,
       uniforms: {
-        top: { value: new THREE.Color("#485d85") },
-        bottom: { value: new THREE.Color("#bcc4c1") },
+        top: { value: new THREE.Color("#4f8fc2") },
+        bottom: { value: new THREE.Color("#d7e9ef") },
       },
       vertexShader:
         "varying vec3 vPosition; void main(){vPosition=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}",
@@ -138,6 +138,103 @@ export function buildWorld(scene) {
     clouds.setMatrixAt(i, dummy.matrix);
   }
   scene.add(clouds);
+  // Near clouds make the sky feel close and toy-like instead of an empty dome.
+  // They are deliberately hand-built so the world stays offline and fast.
+  function cloudBank(x, y, z, scale = 1, tint = "#f5fbff") {
+    const cloud = new THREE.Group();
+    const cloudMat = new THREE.MeshBasicMaterial({
+      color: tint,
+      transparent: true,
+      opacity: 0.82,
+      depthWrite: false,
+      fog: false,
+    });
+    for (const [cx, cy, cz, r] of [
+      [-2.4, 0, 0, 1.7],
+      [-1, 0.55, 0, 2.1],
+      [0.8, 0.35, 0, 2.45],
+      [2.5, 0, 0.1, 1.55],
+      [0, -0.15, 0.25, 2.3],
+    ]) {
+      const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), cloudMat);
+      puff.position.set(cx, cy, cz);
+      cloud.add(puff);
+    }
+    cloud.position.set(x, y, z);
+    cloud.scale.setScalar(scale);
+    group.add(cloud);
+    return cloud;
+  }
+  const nearbyClouds = [
+    cloudBank(-29, 17, -17, 1.25),
+    cloudBank(18, 20, -41, 1.05, "#e9f4ff"),
+    cloudBank(47, 15, -4, 0.9, "#fff2fc"),
+    cloudBank(-4, 24, 8, 1.55, "#ffffff"),
+  ];
+  // A soft rainbow is the visual anchor for the pool rooms.
+  const rainbowColors = ["#ff9eaa", "#ffc889", "#fff09a", "#a7e6b0", "#9ed9ff", "#c6a7ff"];
+  for (let i = 0; i < rainbowColors.length; i++) {
+    const radius = 9.2 - i * 0.62;
+    const points = [];
+    for (let s = 0; s <= 18; s++) {
+      const a = Math.PI - (s / 18) * Math.PI;
+      points.push(new THREE.Vector3(31 + Math.cos(a) * radius, 5.8 + Math.sin(a) * radius, -37.2 - i * 0.08));
+    }
+    const arc = new THREE.Mesh(
+      new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 24, 0.12, 7, false),
+      new THREE.MeshBasicMaterial({ color: rainbowColors[i], transparent: true, opacity: 0.8 }),
+    );
+    group.add(arc);
+  }
+  // The cloud train slowly crosses the sky; the cars are visible from the main path.
+  const train = new THREE.Group();
+  const trainTrim = mat("#f4c7dc", { emissive: "#5f4771", emissiveIntensity: 0.25 });
+  function trainCar(offset, color = "#9a9fd0") {
+    const car = new THREE.Group();
+    const shell = new THREE.Mesh(new THREE.BoxGeometry(6.2, 2.1, 2.5), mat(color, { roughness: 0.42 }));
+    shell.position.x = offset;
+    car.add(shell);
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(6.45, 0.25, 2.7), trainTrim);
+    roof.position.set(offset, 1.18, 0);
+    car.add(roof);
+    for (const wx of [-2, -0.7, 0.7, 2]) {
+      const window = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.62, 0.08), new THREE.MeshBasicMaterial({ color: "#c7f4ff" }));
+      window.position.set(offset + wx, 0.2, 1.28);
+      car.add(window);
+      const windowBack = window.clone();
+      windowBack.position.z = -1.28;
+      car.add(windowBack);
+    }
+    const wheel = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.12, 8, 16), new THREE.MeshBasicMaterial({ color: "#434b6a" }));
+    for (const wx of [-2, 2]) {
+      const w = wheel.clone();
+      w.position.set(offset + wx, -1.18, 1.05);
+      w.rotation.x = Math.PI / 2;
+      car.add(w);
+      const wBack = w.clone();
+      wBack.position.z = -1.05;
+      car.add(wBack);
+    }
+    train.add(car);
+  }
+  trainCar(-7, "#8da8d3");
+  trainCar(0, "#d49fc3");
+  trainCar(7, "#a2cbbd");
+  const locomotive = new THREE.Mesh(new THREE.ConeGeometry(1.45, 3.2, 8), trainTrim);
+  locomotive.rotation.z = -Math.PI / 2;
+  locomotive.position.set(-11.2, 0, 0);
+  train.add(locomotive);
+  const headlamp = new THREE.Mesh(new THREE.SphereGeometry(0.34, 12, 8), new THREE.MeshBasicMaterial({ color: "#fff2b5" }));
+  headlamp.position.set(-12.7, 0, 0);
+  train.add(headlamp);
+  train.position.set(-45, 23, -8);
+  group.add(train);
+  animated.push({ type: "train", mesh: train, offset: 0 });
+  for (let i = 0; i < 5; i++) {
+    const puff = cloudBank(-45 - i * 1.1, 25.1 + i * 0.35, -8, 0.16 + i * 0.04, "#f3efff");
+    puff.userData.trainSmoke = true;
+    animated.push({ type: "smoke", mesh: puff, offset: i });
+  }
   const moon = new THREE.Mesh(
     new THREE.SphereGeometry(11, 32, 24),
     new THREE.MeshBasicMaterial({ color: "#e0e4cf", fog: false }),
@@ -444,6 +541,52 @@ export function buildWorld(scene) {
   segment([47, 0, -29], [47, 5, -29], 0.05, 0.05, dark);
   for (let y = 0.3; y < 5; y += 0.4)
     segment([46, y, -29], [47, y, -29], 0.035, 0.035, dark);
+  // Three extra slides turn the pool edge into a surreal pastel playground.
+  function dreamSlide(points, color, supports = []) {
+    const curve = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p)));
+    const tube = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 48, 0.48, 9, false),
+      mat(color, { roughness: 0.5, emissive: color, emissiveIntensity: 0.08 }),
+    );
+    group.add(tube);
+    for (const [a, b] of supports) segment(a, b, 0.045, 0.045, dark);
+    return tube;
+  }
+  dreamSlide(
+    [[24, 4.8, -8], [27, 4.2, -9], [29, 2.5, -12], [26, 1, -15], [23, 0.3, -17]],
+    "#a7e6cf",
+    [[[24, 0, -8], [24, 4.8, -8]], [[25.2, 0, -8], [25.2, 4.8, -8]]],
+  );
+  dreamSlide(
+    [[31, 5.5, -31], [35, 5, -30], [37, 3, -27], [34, 1.2, -24], [31, 0.3, -22]],
+    "#f6d58e",
+    [[[31, 0, -31], [31, 5.5, -31]], [[32.2, 0, -31], [32.2, 5.5, -31]]],
+  );
+  dreamSlide(
+    [[45, 4.5, -10], [42, 4.1, -10], [40, 2.3, -8], [43, 1, -5], [47, 0.3, -4]],
+    "#c5a9ef",
+    [[[45, 0, -10], [45, 4.5, -10]], [[46.2, 0, -10], [46.2, 4.5, -10]]],
+  );
+  // Small floating house silhouettes keep the horizon busy without adding collision walls.
+  for (const [x, y, z, color] of [
+    [-27, 14, -18, "#f4b4cb"],
+    [7, 17, -44, "#b9d9f2"],
+    [49, 12, -34, "#f6d59c"],
+  ]) {
+    const house = new THREE.Group();
+    const base = new THREE.Mesh(new THREE.BoxGeometry(4.4, 2.5, 3.2), mat(color, { roughness: 0.62 }));
+    base.position.y = -0.5;
+    house.add(base);
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(3.2, 2.2, 4), mat("#8798c9"));
+    roof.rotation.y = Math.PI / 4;
+    roof.position.y = 1.85;
+    house.add(roof);
+    const window = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), new THREE.MeshBasicMaterial({ color: "#fff5b2" }));
+    window.position.set(0, -0.35, 1.64);
+    house.add(window);
+    house.position.set(x, y, z);
+    group.add(house);
+  }
   const poolLight = new THREE.PointLight("#c5ffec", 75, 32, 2);
   poolLight.position.set(35, 5, -24);
   group.add(poolLight);
@@ -683,8 +826,21 @@ export function buildWorld(scene) {
         if (a.type === "flame") {
           a.mesh.scale.y = 0.8 + Math.sin(t * 7 + a.offset) * 0.25;
           a.mesh.rotation.y = t * 0.7;
+        } else if (a.type === "train") {
+          a.mesh.position.x = -45 + ((t * 2.8) % 92);
+          a.mesh.position.y = 23 + Math.sin(t * 0.8) * 0.35;
+          a.mesh.rotation.z = Math.sin(t * 0.45) * 0.012;
+        } else if (a.type === "smoke") {
+          const trainX = -45 + ((t * 2.8) % 92);
+          a.mesh.position.x = trainX - 12 - a.offset * 1.2;
+          a.mesh.position.y = 25.1 + a.offset * 0.35 + Math.sin(t * 0.8 + a.offset) * 0.2;
+          a.mesh.scale.setScalar(0.16 + a.offset * 0.04 + Math.sin(t * 1.2 + a.offset) * 0.015);
         } else a.mesh.rotation.x = Math.sin(t * 0.85 + a.offset) * 0.23;
       }
+      nearbyClouds.forEach((cloud, i) => {
+        cloud.position.x += Math.sin(t * 0.08 + i) * 0.002;
+        cloud.rotation.y = Math.sin(t * 0.12 + i) * 0.03;
+      });
       fireLight.intensity = 27 + Math.sin(t * 8) * 4;
       halo.rotation.z = Math.sin(t * 0.15) * 0.06;
       for (const p of memories) {
