@@ -17,6 +17,8 @@ Der Browser öffnet sich unter `http://127.0.0.1:5177/`. Falls der Port belegt i
 
 Windows: Nach `npm ci` funktionieren auch `start-game.cmd` und `npm run window` (Electron). Der Browserstart unterstützt Windows, macOS und Linux. Die Electron-App lädt dieselbe Spielversion über ihren lokalen Server.
 
+Für Windows reicht auch ein Doppelklick auf `start-live-server.bat`. Die BAT-Datei startet `server.js`, der Live-Server sucht bei Bedarf automatisch den nächsten freien Port und öffnet danach den Browser. Das schwarze Serverfenster offen lassen, solange du spielen möchtest; zum Beenden `Strg+C` drücken.
+
 Für ein Handy im gleichen WLAN:
 
 ```sh
